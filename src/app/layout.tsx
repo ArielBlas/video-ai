@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Outfit } from "next/font/google";
 import "./globals.css";
 import Provider from "./provider";
+import ConvexClientProvider from "./ConvexClientProvider";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -20,7 +21,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={outfit.className}>
-        <Provider>{children}</Provider>
+        <ConvexClientProvider>{children}</ConvexClientProvider>
       </body>
     </html>
   );
