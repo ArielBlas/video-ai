@@ -13,14 +13,15 @@ export const createNewUser = mutation({
       .collect();
 
     if (!user[0].email) {
-      const result = ctx.db.insert("users", {
+      const userData = {
         name: args.name,
         email: args.email,
         pictureURL: args.pictureURL,
         credits: 3,
-      });
+      };
+      await ctx.db.insert("users", userData);
 
-      return result;
+      return userData;
     }
 
     return user[0];

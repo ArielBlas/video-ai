@@ -18,14 +18,13 @@ const Provider: React.FC<ProviderProps> = ({ children }) => {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      setUser(user);
-
       if (user) {
         const result = await CreateUser({
           email: user?.email,
           name: user?.displayName,
           pictureURL: user?.photoURL,
         });
+        setUser(result);
       }
     });
 

@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useAuthContext } from "@/app/provider";
 
 const MenuItems = [
   {
@@ -47,6 +48,7 @@ const MenuItems = [
 
 const AppSidebar = () => {
   const path = usePathname();
+  const { user } = useAuthContext();
 
   return (
     <Sidebar>
@@ -94,7 +96,7 @@ const AppSidebar = () => {
         <div className="p-5 border rounded-lg mb-6 bg-gray-800">
           <div className="flex items-center justify-between">
             <Gem className="text-gray-400" />
-            <span className="text-gray-400">5 Credits Left</span>
+            <span className="text-gray-400">{user?.credits} Credits Left</span>
           </div>
           <Button className="w-full mt-3">Buy more Credits</Button>
         </div>

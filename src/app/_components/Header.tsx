@@ -25,13 +25,15 @@ const Header = () => {
             <Link href="/dashboard">
               <Button>Dashboard</Button>
             </Link>
-            <Image
-              src={user.photoURL}
-              alt="profile"
-              width={40}
-              height={40}
-              className="rounded-full"
-            />
+            {user.pictureURL && (
+              <Image
+                src={user.pictureURL}
+                alt="profile"
+                width={40}
+                height={40}
+                className="rounded-full"
+              />
+            )}
           </div>
         )}
       </div>
