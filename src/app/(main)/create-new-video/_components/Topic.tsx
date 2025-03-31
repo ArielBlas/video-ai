@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { SparklesIcon } from "lucide-react";
 
 const sugesstions = [
   "Historic Story",
@@ -20,8 +21,15 @@ const sugesstions = [
   "Motivational Stories",
 ];
 
-const Topic = () => {
+interface TopicProps {
+  onHandleInputChange: (field: string, value: string) => void;
+}
+
+const Topic = ({ onHandleInputChange }: TopicProps) => {
   const [selectedTopic, setSelectedTopic] = useState("");
+
+  const GenerateScript = () => {};
+
   return (
     <div>
       <h2 className="mb-1">Project Title</h2>
@@ -43,7 +51,10 @@ const Topic = () => {
                   key={index}
                   variant="outline"
                   className={`${selectedTopic === suggestion ? "bg-secondary" : ""}`}
-                  onClick={() => setSelectedTopic(suggestion)}
+                  onClick={() => {
+                    setSelectedTopic(suggestion);
+                    onHandleInputChange("topic", suggestion);
+                  }}
                 >
                   {suggestion}
                 </Button>
@@ -53,11 +64,21 @@ const Topic = () => {
           <TabsContent value="your_topic">
             <div>
               <h2>Enter your own topic</h2>
-              <Textarea placeholder="Enter your topic" />
+              <Textarea
+                placeholder="Enter your topic"
+                onChange={(event) =>
+                  onHandleInputChange("topic", event.target.value)
+                }
+              />
             </div>
           </TabsContent>
         </Tabs>
       </div>
+
+      <Button className="mt-3" size="sm" onClick={GenerateScript}>
+        <SparklesIcon />
+        Generate Script
+      </Button>
     </div>
   );
 };
