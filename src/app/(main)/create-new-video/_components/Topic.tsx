@@ -4,7 +4,8 @@ import React, { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { SparklesIcon } from "lucide-react";
+import { Loader2Icon, SparklesIcon } from "lucide-react";
+import axios from "axios";
 
 const sugesstions = [
   "Historic Story",
@@ -27,8 +28,22 @@ interface TopicProps {
 
 const Topic = ({ onHandleInputChange }: TopicProps) => {
   const [selectedTopic, setSelectedTopic] = useState("");
+  const [scripts, setScripts] = useState();
+  const [loading, setLoading] = useState(false);
 
-  const GenerateScript = () => {};
+  const GenerateScript = async () => {
+    setLoading(true);
+    try {
+      const result = await axios.post("/api/generate-script", {
+        topic: selectedTopic,
+      });
+      setScripts(result.data.scripts);
+    } catch (error) {
+      console.error("Error generating script:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div>
@@ -73,10 +88,30 @@ const Topic = ({ onHandleInputChange }: TopicProps) => {
             </div>
           </TabsContent>
         </Tabs>
+
+        {scripts.length > 0 && (
+          <div className="mt-3">
+            <h2>Select the Script</h2>
+            <div className="grid grid-cols-2 gap-5 mt-1">
+              {scripts.map((items, index) => (
+                <div key={index} className="p-3 border rounded-lg ">
+                  <p className="line-clamp-4 text-sm text-gray-300">
+                    {items.content}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
-      <Button className="mt-3" size="sm" onClick={GenerateScript}>
-        <SparklesIcon />
+      <Button
+        className="mt-3"
+        size="sm"
+        disabled={loading}
+        onClick={GenerateScript}
+      >
+        {loading ? <Loader2Icon className="animate-spin" /> : <SparklesIcon />}
         Generate Script
       </Button>
     </div>
