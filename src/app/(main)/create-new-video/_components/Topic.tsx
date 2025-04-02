@@ -27,12 +27,14 @@ interface TopicProps {
 }
 
 const Topic = ({ onHandleInputChange }: TopicProps) => {
-  const [selectedTopic, setSelectedTopic] = useState("");
+  const [selectedTopic, setSelectedTopic] = useState();
+  const [selectedScriptIndex, setSelectedScriptIndex] = useState();
   const [scripts, setScripts] = useState();
   const [loading, setLoading] = useState(false);
 
   const GenerateScript = async () => {
     setLoading(true);
+    setSelectedScriptIndex(null);
     try {
       const result = await axios.post("/api/generate-script", {
         topic: selectedTopic,
@@ -94,7 +96,13 @@ const Topic = ({ onHandleInputChange }: TopicProps) => {
             <h2>Select the Script</h2>
             <div className="grid grid-cols-2 gap-5 mt-1">
               {scripts.map((items, index) => (
-                <div key={index} className="p-3 border rounded-lg ">
+                <div
+                  key={index}
+                  className={`p-3 border rounded-lg cursor-pointer ${selectedScriptIndex === index ? "border-white bg-secondary" : ""}`}
+                  onClick={() => {
+                    setSelectedScriptIndex(index);
+                  }}
+                >
                   <p className="line-clamp-4 text-sm text-gray-300">
                     {items.content}
                   </p>
@@ -105,15 +113,21 @@ const Topic = ({ onHandleInputChange }: TopicProps) => {
         )}
       </div>
 
-      <Button
-        className="mt-3"
-        size="sm"
-        disabled={loading}
-        onClick={GenerateScript}
-      >
-        {loading ? <Loader2Icon className="animate-spin" /> : <SparklesIcon />}
-        Generate Script
-      </Button>
+      {!scripts && (
+        <Button
+          className="mt-3"
+          size="sm"
+          disabled={loading}
+          onClick={GenerateScript}
+        >
+          {loading ? (
+            <Loader2Icon className="animate-spin" />
+          ) : (
+            <SparklesIcon />
+          )}
+          Generate Script
+        </Button>
+      )}
     </div>
   );
 };
