@@ -3,6 +3,9 @@ import React, { useState } from "react";
 import Topic from "./_components/Topic";
 import VideoStyle from "./_components/VideoStyle";
 import Voice from "./_components/Voice";
+import Captions from "./_components/Captions";
+import { Button } from "@/components/ui/button";
+import { WandSparkles } from "lucide-react";
 
 const CreateNewVideo = () => {
   const [formData, setFormData] = useState<Record<string, string>>();
@@ -29,6 +32,11 @@ const CreateNewVideo = () => {
           <Voice onHandleInputChange={onHandleInputChange} />
 
           {/* Captions */}
+          <Captions onHandleInputChange={onHandleInputChange} />
+
+          <Button className="w-full mt-5">
+            <WandSparkles /> Generate Video
+          </Button>
         </div>
         <div></div>
       </div>
