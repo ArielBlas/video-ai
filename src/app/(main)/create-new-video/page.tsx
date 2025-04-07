@@ -7,6 +7,7 @@ import Captions from "./_components/Captions";
 import { Button } from "@/components/ui/button";
 import { WandSparkles } from "lucide-react";
 import Preview from "./_components/Preview";
+import axios from "axios";
 
 const CreateNewVideo = () => {
   const [formData, setFormData] = useState<Record<string, string>>();
@@ -16,6 +17,22 @@ const CreateNewVideo = () => {
       ...prev,
       [fieldName]: fieldValue,
     }));
+  };
+
+  const GenerateVideo = async () => {
+    if (
+      !formData?.topic ||
+      !formData?.script ||
+      !formData?.videoStyle ||
+      !formData?.caption ||
+      !formData?.voice
+    ) {
+      console.log("Error", "Enter all fields");
+      return;
+    }
+    const result = await axios.post("/api/generate-video-data", {
+      ...formData,
+    });
   };
 
   return (

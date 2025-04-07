@@ -101,6 +101,7 @@ const Topic = ({ onHandleInputChange }: TopicProps) => {
                   className={`p-3 border rounded-lg cursor-pointer ${selectedScriptIndex === index ? "border-white bg-secondary" : ""}`}
                   onClick={() => {
                     setSelectedScriptIndex(index);
+                    onHandleInputChange("script", items.content);
                   }}
                 >
                   <p className="line-clamp-4 text-sm text-gray-300">
