@@ -5,12 +5,19 @@ import VideoStyle from "./_components/VideoStyle";
 import Voice from "./_components/Voice";
 import Captions from "./_components/Captions";
 import { Button } from "@/components/ui/button";
-import { WandSparkles } from "lucide-react";
+import { Loader2Icon, WandSparkles } from "lucide-react";
 import Preview from "./_components/Preview";
 import axios from "axios";
+import { useMutation } from "convex/react";
+import { api } from "../../../../convex/_generated/api";
+import { useAuthContext } from "@/app/provider";
 
 const CreateNewVideo = () => {
   const [formData, setFormData] = useState<Record<string, string>>();
+  const [loading, setLoading] = useState(false);
+
+  const CreateInitialVideoRecord = useMutation(api.videoData.CreateVideoData);
+  const { user } = useAuthContext();
 
   const onHandleInputChange = (fieldName: string, fieldValue: string) => {
     setFormData((prev) => ({
@@ -30,9 +37,25 @@ const CreateNewVideo = () => {
       console.log("Error", "Enter all fields");
       return;
     }
+
+    setLoading(true);
+
+    const resp = await CreateInitialVideoRecord({
+      title: formData?.title,
+      topic: formData?.topic,
+      script: formData?.script,
+      videoStyle: formData?.videoStyle,
+      caption: formData?.caption,
+      voice: formData?.voice,
+      uui: user?._id,
+      createdBy: user?.email,
+    });
+
     const result = await axios.post("/api/generate-video-data", {
       ...formData,
     });
+
+    setLoading(false);
   };
 
   return (
@@ -52,8 +75,17 @@ const CreateNewVideo = () => {
           {/* Captions */}
           <Captions onHandleInputChange={onHandleInputChange} />
 
-          <Button className="w-full mt-5">
-            <WandSparkles /> Generate Video
+          <Button
+            className="w-full mt-5"
+            onClick={GenerateVideo}
+            disabled={loading}
+          >
+            {loading ? (
+              <Loader2Icon className="animate-spin" />
+            ) : (
+              <WandSparkles />
+            )}{" "}
+            Generate Video
           </Button>
         </div>
         <div>
