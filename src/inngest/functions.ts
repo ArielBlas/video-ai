@@ -1,5 +1,6 @@
 import axios from "axios";
 import { inngest } from "./client";
+import { createClient } from "@deepgram/sdk";
 
 export const helloWorld = inngest.createFunction(
   { id: "Hello World" },
@@ -36,11 +37,26 @@ export const GenerateVideoData = inngest.createFunction(
       );
       return result.data.audio;
     });
+
     // Generate Captions
+    const GenerateCaptions = await step.run("generateCaptions", async () => {
+      const deepgram = createClient(process.env.NEXT_PUBLIC_DEEPGRAM_API_KEY);
+      const { result, error } = deepgram.listen.prerecorded.transcribeUrl(
+        {
+          url: GenerateAudioFile,
+        },
+        {
+          model: "nova-3",
+        }
+      );
+
+      return result.results?.channels[0]?.alternatives[0]?.words;
+    });
+
     // Generate Image Prompt from Script
     // Generate Images using AI
     // Save All Data to DB
 
-    return GenerateAudioFile;
+    return GenerateCaptions;
   }
 );
