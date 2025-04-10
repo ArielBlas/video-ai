@@ -1,6 +1,18 @@
 import axios from "axios";
 import { inngest } from "./client";
 import { createClient } from "@deepgram/sdk";
+import { GenerateImageScript } from "@/configs/AiModel";
+
+const ImagePromptScript = `Generate Image prompt of {style} style with all details for each scene for 30 seconds video : script: {script}
+  - Just Give specifing image prompt depends on the story line
+  - do not give camera angle image prompt
+  - Follow the following schema and return JSON data (Max 4-5 Images)
+  - [
+    {
+      imagePrompt: ''
+      sceneContent: '<Script Content>'
+    }
+  ]`;
 
 export const helloWorld = inngest.createFunction(
   { id: "Hello World" },
@@ -54,9 +66,23 @@ export const GenerateVideoData = inngest.createFunction(
     });
 
     // Generate Image Prompt from Script
+    const GenerateImagePrompts = await step.run(
+      "generateImagePrompt",
+      async () => {
+        const FINAL_PROMPT = ImagePromptScript.replace(
+          "{style}",
+          videoStyle
+        ).replace("{script}", script);
+        const result = await GenerateImageScript.sendMessage(FINAL_PROMPT);
+        const resp = JSON.parse(result.response.text());
+
+        return resp;
+      }
+    );
+
     // Generate Images using AI
     // Save All Data to DB
 
-    return GenerateCaptions;
+    return GenerateImagePrompts;
   }
 );

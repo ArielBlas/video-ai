@@ -41,4 +41,42 @@ export const generateScript = model.startChat({
   ],
 });
 
+export const GenerateImageScript = model.startChat({
+  generationConfig,
+  history: [
+    {
+      role: "user",
+      parts: [
+        {
+          text: `
+                Generate Image prompt of {style} style with all details for each scene for 30 seconds video : script: {script}
+                - Just Give specifing image prompt depends on the story line
+                - do not give camera angle image prompt
+                - Follow the following schema and return JSON data (Max 4-5 Images)
+                [
+                  {
+                    imagePrompt: ''
+                    sceneContent: '<Script Content>'
+                  }
+                ]
+            `,
+        },
+      ],
+    },
+    {
+      role: "model",
+      parts: [
+        {
+          text: `
+                {
+                  imagePrompt: ''
+                  sceneContent: '<Script Content>'
+                }
+            `,
+        },
+      ],
+    },
+  ],
+});
+
 //   const result = await chatSession.sendMessage("");
