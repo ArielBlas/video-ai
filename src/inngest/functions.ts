@@ -81,8 +81,35 @@ export const GenerateVideoData = inngest.createFunction(
     );
 
     // Generate Images using AI
+    const GenerateImages = await step.run("generateImages", async () => {
+      let images = [];
+      images = await Promise.all(
+        GenerateImagePrompts.map(async (element) => {
+          const result = await axios.post(
+            `${BASE_URL}/api/generate-image`,
+            {
+              width: 1024,
+              height: 1024,
+              input: element?.imagePrompt,
+              model: "sdxl",
+              aspectRatio: "1:1",
+            },
+            {
+              headers: {
+                "x-api-key": process.env.NEXT_PUBLIC_AIGURULAB_API_KEY,
+                "Content-Type": "application/json",
+              },
+            }
+          );
+          return result.data.image;
+        })
+      );
+
+      return images;
+    });
+
     // Save All Data to DB
 
-    return GenerateImagePrompts;
+    return GenerateImages;
   }
 );
