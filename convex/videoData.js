@@ -25,3 +25,20 @@ export const CreateVideoData = mutation({
     return result;
   },
 });
+
+export const UpdateVideoRecord = mutation({
+  args: {
+    record: v.id("videoData"),
+    audioUrl: v.string(),
+    images: v.any(),
+    captionJSON: v.any(),
+  },
+  handler: async (ctx, args) => {
+    const result = await ctx.db.patch(args.recordId, {
+      audioUrl: args.audioUrl,
+      images: args.images,
+      captionJSON: args.captionJSON,
+    });
+    return result;
+  },
+});

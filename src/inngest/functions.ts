@@ -2,6 +2,8 @@ import axios from "axios";
 import { inngest } from "./client";
 import { createClient } from "@deepgram/sdk";
 import { GenerateImageScript } from "@/configs/AiModel";
+import { ConvexHttpClient } from "convex/browser";
+import { api } from "../../convex/_generated/api";
 
 const ImagePromptScript = `Generate Image prompt of {style} style with all details for each scene for 30 seconds video : script: {script}
   - Just Give specifing image prompt depends on the story line
@@ -31,7 +33,10 @@ export const GenerateVideoData = inngest.createFunction(
   { id: "generate-video-data" },
   { event: "generate-video-data" },
   async ({ event, step }) => {
-    const { script, topic, title, caption, videoStyle, voice } = event?.data;
+    const { script, topic, title, caption, videoStyle, voice, recordId } =
+      event?.data;
+    const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL);
+
     // Generate Audio File MP3
     const GenerateAudioFile = await step.run("GenerateAudioFile", async () => {
       const result = await axios.post(
@@ -109,7 +114,17 @@ export const GenerateVideoData = inngest.createFunction(
     });
 
     // Save All Data to DB
+    const UpdateDB = await step.run("updateDB", async () => {
+      const result = await convex.mutation(api.videoData.UpdateVideoData, {
+        recordId: recordId,
+        audioUrl: GenerateAudioFile,
+        captionJson: GenerateCaptions,
+        images: GenerateImages,
+      });
 
-    return GenerateImages;
+      return result;
+    });
+
+    return "Executed Successfully!";
   }
 );

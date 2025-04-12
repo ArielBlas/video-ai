@@ -53,6 +53,7 @@ const CreateNewVideo = () => {
 
     const result = await axios.post("/api/generate-video-data", {
       ...formData,
+      recordId: resp,
     });
 
     setLoading(false);
