@@ -1,11 +1,30 @@
 "use client";
 import { Button } from "@/components/ui/button";
+import { useConvex } from "convex/react";
 import Image from "next/image";
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { api } from "../../../../../convex/_generated/api";
+import { useAuthContext } from "@/app/provider";
 
 const VideoList = () => {
   const [videoList, setVideoList] = useState([]);
+  const convex = useConvex();
+  const { user } = useAuthContext();
+
+  useEffect(() => {
+    if (user) {
+      GetUserVideoList();
+    }
+  }, [user]);
+
+  const GetUserVideoList = async () => {
+    const result = await convex.query(api.videoData.GetUserVideos, {
+      userId: user?.id,
+    });
+    setVideoList(result);
+  };
+
   return (
     <div>
       {videoList.length > 0 && (
