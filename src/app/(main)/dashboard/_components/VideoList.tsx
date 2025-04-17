@@ -25,6 +25,23 @@ const VideoList = () => {
       userId: user?.id,
     });
     setVideoList(result);
+    const isPendingVideo = result.find((video) => video.status == "pending");
+    if (isPendingVideo) {
+      GetPendingVideoStatus(isPendingVideo);
+    }
+  };
+
+  const GetPendingVideoStatus = (pendingVideo) => {
+    const intervalId = setInterval(async () => {
+      const result = await convex.query(api.videoData.GetVideoById, {
+        videoId: pendingVideo?._id,
+      });
+
+      if (result.status == "completed") {
+        clearInterval(intervalId);
+        GetUserVideoList();
+      }
+    }, 5000);
   };
 
   return (

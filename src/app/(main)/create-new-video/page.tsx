@@ -11,6 +11,7 @@ import axios from "axios";
 import { useMutation } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { useAuthContext } from "@/app/provider";
+import { toast } from "sonner";
 
 const CreateNewVideo = () => {
   const [formData, setFormData] = useState<Record<string, string>>();
@@ -27,6 +28,11 @@ const CreateNewVideo = () => {
   };
 
   const GenerateVideo = async () => {
+    if (user?.credits <= 0) {
+      toast("Please add more credits!");
+      return;
+    }
+
     if (
       !formData?.topic ||
       !formData?.script ||
