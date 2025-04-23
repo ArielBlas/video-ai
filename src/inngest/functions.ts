@@ -5,6 +5,8 @@ import { GenerateImageScript } from "@/configs/AiModel";
 import { ConvexHttpClient } from "convex/browser";
 import { api } from "../../convex/_generated/api";
 
+import { getServices, renderMediaOnCloudrun } from "@remotion/cloudrun/client";
+
 const ImagePromptScript = `Generate Image prompt of {style} style with all details for each scene for 30 seconds video : script: {script}
   - Just Give specifing image prompt depends on the story line
   - do not give camera angle image prompt
@@ -123,6 +125,31 @@ export const GenerateVideoData = inngest.createFunction(
       });
 
       return result;
+    });
+
+    const RenderVideo = await step.run("renderVideo", async () => {
+      const services = await getServices({
+        region: "us-east1",
+        compatibleOnly: true,
+      });
+
+      const serviceName = services[0].serviceName;
+
+      const result = await renderMediaOnCloudrun({
+        serviceName,
+        region: "us-east1",
+        serveUrl: process.env.?.GCP_SERVE_URL,
+        composition: "videoRender",
+        inputProps: {},
+        codec: "h264",
+      });
+
+      if (result.type === "success") {
+        console.log(result.bucketName);
+        console.log(result.renderId);
+      }
+
+      return result.publicUrl;
     });
 
     return "Executed Successfully!";

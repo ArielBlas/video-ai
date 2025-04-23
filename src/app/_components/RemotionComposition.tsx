@@ -10,7 +10,7 @@ import {
   useVideoConfig,
 } from "remotion";
 
-const RemotionComposition = ({ videoData, setDurationInFrame }) => {
+const RemotionComposition = ({ videoData }) => {
   const captions = videoData?.captionJson;
   const fps = useVideoConfig();
   const imageList = videoData?.images;
@@ -24,7 +24,7 @@ const RemotionComposition = ({ videoData, setDurationInFrame }) => {
 
   const getDurationFrame = () => {
     const totalDuration = captions[captions.length - 1]?.end * fps;
-    setDurationInFrame(totalDuration);
+    // setDurationInFrame(totalDuration);
     return totalDuration;
   };
 
