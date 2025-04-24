@@ -140,7 +140,13 @@ export const GenerateVideoData = inngest.createFunction(
         region: "us-east1",
         serveUrl: process.env.?.GCP_SERVE_URL,
         composition: "videoRender",
-        inputProps: {},
+        inputProps: {
+          videoData: {
+            audioUrl: GenerateAudioFile,
+            captionJson: GenerateCaptions,
+            images: GenerateImages,
+          },
+        },
         codec: "h264",
       });
 
@@ -151,6 +157,23 @@ export const GenerateVideoData = inngest.createFunction(
 
       return result.publicUrl;
     });
+
+    const UpdateDownloadUrl = await step.run(
+      "updateDownloadUrl",
+      async () => {
+        const result = await convex.mutation(
+          api.videoData.UpdateVideoDownloadUrl,
+          {
+            recordId: recordId,
+            audioUrl: GenerateAudioFile,
+            captionJson: GenerateCaptions,
+            images: GenerateImages,
+            downloadUrl: RenderVideo,
+          }
+        );
+        return result;
+      }
+    );
 
     return "Executed Successfully!";
   }
