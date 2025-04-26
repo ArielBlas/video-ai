@@ -1,8 +1,11 @@
 "use client";
 import { useAuthContext } from "@/app/provider";
 import { Button } from "@/components/ui/button";
+import { PayPalButtons } from "@paypal/react-paypal-js";
+import { useMutation } from "convex/react";
 import { CircleDollarSign } from "lucide-react";
 import React from "react";
+import { toast } from "sonner";
 
 export const creditsPlans = [
   {
@@ -28,7 +31,20 @@ export const creditsPlans = [
 ];
 
 function Billing() {
-  const { user } = useAuthContext();
+  const { user, setUser } = useAuthContext();
+  const updateUserCredits = useMutation(api.users.UpdateUserCredits);
+
+  const onPaymentSuccess = async (cost, credits) => {
+    const result = await updateUserCredits({
+      uid: user?.id,
+      credits: Number(user.credits) + Number(credits),
+    });
+    setUser((prev) => ({
+      ...prev,
+      credits: Number(user.credits) + Number(credits),
+    }));
+    toast.success("Credits Added!");
+  };
 
   return (
     <div>
@@ -54,14 +70,27 @@ function Billing() {
               <h2 className="text-xl flex gap-2 items-center">
                 <CircleDollarSign /> <strong>{plan?.credits}</strong>
               </h2>
-              <div className="flex items-center">
-                <CircleDollarSign size={20} />
-                <h2 className="font-bold text-3xl ml-2">${plan.cost}</h2>
 
-                <div className="flex gap-2 items-center">
-                  <h2 className="font-medium text-xl">{plan.cost} $</h2>
-                  <Button>Buy Now</Button>
-                </div>
+              <div className="flex gap-2 items-center">
+                <h2 className="font-medium text-xl">{plan.cost} $</h2>
+                <PayPalButtons
+                  style={{ layout: "horizontal" }}
+                  onApprove={() => onPaymentSuccess(plan.cost, plan.credits)}
+                  onCancel={() => toast("Payment Cancelled!")}
+                  createOrder={(data, actions) => {
+                    return actions?.order?.create({
+                      intent: "CAPTURE",
+                      purchase_units: [
+                        {
+                          amount: {
+                            value: String(plan.cost),
+                            currency_code: "USD",
+                          },
+                        },
+                      ],
+                    });
+                  }}
+                />
               </div>
             </div>
           ))}
