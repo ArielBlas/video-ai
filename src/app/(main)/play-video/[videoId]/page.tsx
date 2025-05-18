@@ -4,6 +4,7 @@ import RemotionPlayer from "../_components/RemotionPlayer";
 import VideoInfo from "../_components/VideoInfo";
 import { useConvex } from "convex/react";
 import { api } from "../../../../../convex/_generated/api";
+import { useParams } from "next/navigation";
 
 const PlayVideo = () => {
   const { videoId } = useParams();

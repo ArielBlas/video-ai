@@ -1,6 +1,5 @@
 "use client";
 import { useAuthContext } from "@/app/provider";
-import { Button } from "@/components/ui/button";
 import { PayPalButtons } from "@paypal/react-paypal-js";
 import { useMutation } from "convex/react";
 import { CircleDollarSign } from "lucide-react";
